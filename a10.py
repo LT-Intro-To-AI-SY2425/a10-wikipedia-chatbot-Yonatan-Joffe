@@ -61,7 +61,7 @@ def get_capital_city(country_name: str) -> str:
 
 def get_population(country_name: str) -> str:
     infobox_text = clean_text(get_first_infobox_text(get_page_html(country_name)))
-    pattern = r"Population.*?(?P<pop>[0-9][0-9,]*)"
+    pattern = r"Population(?:[^0-9]{0,20})?.*?(?P<pop>[0-9][0-9, ]{6,})"
     error_text = "Page infobox has no population information"
     match = get_match(infobox_text, pattern, error_text)
     return match.group("pop").strip()
