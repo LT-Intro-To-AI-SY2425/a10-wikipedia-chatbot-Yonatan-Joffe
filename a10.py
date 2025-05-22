@@ -6,7 +6,6 @@ from bs4 import BeautifulSoup
 from match import match
 from typing import List, Callable, Tuple, Any, Match
 
-
 def get_page_html(title: str) -> str:
     results = wikipedia.search(title)
     return WikipediaPage(results[0]).html()
@@ -40,7 +39,7 @@ def get_match(
     return match
 
 
-def get_capital_city(country_name: str) -> str:
+def get_capital_city(capital_name: str) -> str:
     """Gets the capital city of a country
 
     Args:
@@ -49,13 +48,18 @@ def get_capital_city(country_name: str) -> str:
     Returns:
         capital city of the country
     """
-    infobox_text = clean_text(get_first_infobox_text(get_page_html(country_name)))
+    infobox_text = clean_text(get_first_infobox_text(get_page_html(capital_name)))
     # Updated regex pattern to be more flexible
-    pattern = r"(?:Capital(?:\(.*?\))?\s*)(?P<capital>[A-Z][a-zA-Z\s,()\-]*)"
+    pattern = r"(?:capital[^\w]*[:|]?[^\w]*)(?P<capital>[A-Za-z\s]+)"
     error_text = "Page infobox has no capital city information"
     match = get_match(infobox_text, pattern, error_text)
 
-    return match.group("capital").strip()
+    capital_city = match.group("capital")
+
+    if "and largest city" in capital_city:
+        capital_city = capital_city.replace("and largest city", "").strip()
+
+    return capital_city
 
 
 
